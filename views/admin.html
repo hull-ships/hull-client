@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Hull Client-side data.</title>
+    <link rel="stylesheet" href="//dd04rofzygnm0.cloudfront.net/releases/master/865f04865d2448286626bac92c518a8f8ea8bafe/stylesheets/neue.css" />
+  </head>
+  <body class='container'>
+    <div class="col-sm-12 mt-1 col-lg-6 col-lg-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title text-center">Zapier ↔ Hull connector</h3>
+        </div>
+        <div class="panel-body">
+          <h5>Paste this snippet in your page to get access to client-side data.</h5>
+<pre><code style="word-break: break-all;">&lt;script&gt;var _hull = { endpoint: "https://<%=host%>/user", token: "<%= token %>" };&lt;/script&gt;&lt;script src="http://<%=host%>/ship.js" type="text/javascript" charset="utf-8"&gt;&lt;/script&gt;
+
+&lt;script type="text/javascript" charset="utf-8"&gt;
+  _hull.emitter &amp;&amp; _hull.emitter.on("user.update", function(user) {
+    console.log("User Updated", user);
+  });
+&lt;/script&gt;</code></pre>
+          <div class="mb-1">
+            <p>Checkout the instructions tab above first</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/clipboard.min.js"></script>
+  </body>
+</html>
+
+

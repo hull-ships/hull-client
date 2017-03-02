@@ -1,0 +1,14 @@
+{
+  "name": "Hull + Clearbit",
+  "description": "A Hull Integration for Clearbit.",
+  "repository": "https://github.com/hull-ships/hull-clearbit",
+  "website": "http://www.hull.io",
+  "success_url": "/readme",
+  "env": {
+    "SECRET" : {
+      "description" : "A Secret key to encrypt. Keep it long",
+      "generator" : "secret"
+    }
+  },
+  "scripts": {}
+}

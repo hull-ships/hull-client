@@ -1,0 +1,57 @@
+{
+  "name": "Client-side data",
+  "description": "Get access to whitelisted traits and segments from the Client-side",
+  "picture": "picture.png",
+  "version": "0.0.3",
+  "admin": "/admin.html",
+  "tags": [
+    "incoming",
+    "outgoing",
+    "oneColumn"
+  ],
+  "private_settings": [
+    {
+      "name": "synchronized_segments",
+      "title": "Only users from these segments will be accessible client-side",
+      "type": "array",
+      "format": "segment",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    {
+      "name": "whitelisted_domains",
+      "title": "Domains from which access will be allowed",
+      "type": "array",
+      "format": "table",
+      "items": {
+        "type": "string"
+      },
+      "default": ["hull.io"]
+    },
+    {
+      "name": "public_traits",
+      "title": "Traits that will be sent client-side",
+      "type": "array",
+      "format": "trait",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    {
+      "name": "public_segments",
+      "title": "Segments that will be sent client-side",
+      "type": "array",
+      "format": "segment",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  ],
+  "resources": [],
+  "readme": "readme.md",
+  "ui": false
+}
