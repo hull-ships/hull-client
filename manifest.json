@@ -1,6 +1,6 @@
 {
   "name": "Client-side data",
-  "description": "Get access to whitelisted traits and segments from the Client-side",
+  "description": "Get access to whitelisted attributes and segments from the Client-side",
   "picture": "picture.png",
   "version": "0.0.3",
   "admin": "/admin.html",
