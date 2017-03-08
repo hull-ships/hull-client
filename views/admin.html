@@ -7,10 +7,13 @@
     <div class="col-sm-12 mt-1 col-lg-6 col-lg-offset-3">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title text-center">Zapier ↔ Hull connector</h3>
+          <h3 class="panel-title text-center">Browser connector</h3>
         </div>
         <div class="panel-body">
-          <h5>Paste this snippet in your page to get access to client-side data.</h5>
+          <h5>Paste this snippet in your page to get access to User data from Hull</h5>
+          <div class="mb-1">
+            <p>Checkout the instructions tab above first</p>
+          </div>
 <pre><code style="word-break: break-all;">&lt;script&gt;var _hull = { endpoint: "https://<%=host%>/user", token: "<%= token %>" };&lt;/script&gt;&lt;script src="http://<%=host%>/ship.js" type="text/javascript" charset="utf-8"&gt;&lt;/script&gt;
 
 &lt;script type="text/javascript" charset="utf-8"&gt;
@@ -18,9 +21,6 @@
     console.log("User Updated", user);
   });
 &lt;/script&gt;</code></pre>
-          <div class="mb-1">
-            <p>Checkout the instructions tab above first</p>
-          </div>
         </div>
       </div>
     </div>
