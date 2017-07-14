@@ -62,7 +62,7 @@ module.exports = {
         exclude: /node_modules/,
         loader: "babel-loader",
         query: {
-          plugins: ["lodash"]
+          // plugins: ["lodash"]
         }
       }
     ]
