@@ -58,7 +58,7 @@ const onEmbed = (hull, me, ship) => {
   socket.on("close", ({ message }) => { console.log(message); });
 };
 
-if (window.Hull) {
+if (window.Hull && window.Hull.onEmbed) {
   window.Hull.onEmbed(onEmbed);
 } else {
   onEmbed();
