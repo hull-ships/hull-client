@@ -1,6 +1,6 @@
 {
-  "name": "Client-side data",
-  "description": "Get access to whitelisted attributes and segments from the Client-side",
+  "name": "Browser Personalization",
+  "description": "Get access to whitelisted attributes and segments from the Browser in realtime",
   "picture": "picture.png",
   "version": "0.0.3",
   "admin": "/admin.html",
@@ -9,17 +9,16 @@
     "outgoing",
     "oneColumn"
   ],
-  "private_settings": [
+  "settings":[
     {
-      "name": "synchronized_segments",
-      "title": "Only users from these segments will be accessible client-side",
-      "type": "array",
-      "format": "segment",
-      "items": {
-        "type": "string"
-      },
-      "default": []
-    },
+      "name": "script",
+      "title": "Code to be run everytime user is updated",
+      "type": "string",
+      "format": "code",
+      "default": "console.log(user, segments)"
+    }
+  ],
+  "private_settings": [
     {
       "name": "whitelisted_domains",
       "title": "Domains from which access will be allowed",
@@ -31,18 +30,28 @@
       "default": ["hull.io"]
     },
     {
-      "name": "public_traits",
-      "title": "Traits that will be sent client-side",
+      "name": "synchronized_segments",
+      "title": "Only users from these segments will be sent to the browser",
       "type": "array",
-      "format": "trait",
+      "format": "segment",
       "items": {
         "type": "string"
       },
       "default": []
     },
     {
+      "name": "public_traits",
+      "title": "Traits that will be sent",
+      "type": "array",
+      "format": "trait",
+      "items": {
+        "type": "string"
+      },
+      "default": ["domain", "email"]
+    },
+    {
       "name": "public_segments",
-      "title": "Segments that will be sent client-side",
+      "title": "Segment names that will be sent",
       "type": "array",
       "format": "segment",
       "items": {
@@ -53,5 +62,6 @@
   ],
   "resources": [],
   "readme": "readme.md",
+  "subscriptions" : [ { "url" : "/notify" } ],
   "ui": false
 }

@@ -1,17 +1,17 @@
 /* global window */
 
-import Promise from "bluebird";
+import { Promise } from "es6-promise";
 
 export default function getHullIds() {
   return new Promise(function getId(resolve /* , reject */) {
     const { Hull } = window;
-
     if (!Hull) return resolve({});
-
-    return Hull.ready((hull, me = {}) => {
+    return Hull.ready().then(({ hull, me = {} }) => {
       const { anonymousId } = hull.config();
-      const { external_id: externalId, id } = me;
-      resolve({ id, externalId, anonymousId });
+      if (!me) return resolve({ anonymous_id: anonymousId });
+
+      const { external_id, id } = me;
+      return resolve({ id, external_id, anonymous_id: anonymousId });
     });
   });
 }

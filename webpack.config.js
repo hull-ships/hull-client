@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const Visualizer = require("webpack-visualizer-plugin");
 
 let plugins = [];
 
@@ -18,6 +19,8 @@ if (process.env.NODE_ENV === "production") {
       minimize: true
     })
   ];
+} else {
+  plugins = [new Visualizer()];
 }
 
 module.exports = {

@@ -1,43 +1,65 @@
-/* global _hull, window, analytics, location */
+/* global window, analytics, location, document */
 
-import Promise from "bluebird";
-import { find, isEmpty } from "lodash";
-import { EventEmitter2 } from "eventemitter2";
+import { Promise } from "es6-promise";
+import find from "lodash/find";
+import isEmpty from "lodash/isEmpty";
+import io from "socket.io-client";
+import getLocalStorage from "./lib/localstorage";
 import getQueryStringIds from "./lib/querystring";
 import getAnalyticsIds from "./lib/analytics";
 import getHullIds from "./lib/hull";
-import fetchUserData from "./lib/fetch-user-data";
+import getIntercomIds from "./lib/intercom";
+import userUpdate from "./lib/user-update";
 
 
-(function Emitter() {
-  if (!_hull) {
-    console.warn("No _hull object found. Needed to move forward");
-    return Promise.reject();
+const onEmbed = (hull, me, ship) => {
+  const scriptTag = document.querySelector("script[data-hull-endpoint]");
+  let id = scriptTag.getAttribute("data-hull-id");
+  let endpoint = scriptTag.getAttribute("data-hull-endpoint");
+  if (hull && ship) {
+    id = ship.id;
+    endpoint = ship.source_url;
   }
 
-  const findId = (ids = []) => find(ids, id => !isEmpty(id));
+  if (!id || !endpoint) {
+    console.log("Could not find id or Endpoint on the Script tag. Did you copy/paste it correctly?");
+  }
 
-  const emitter = new EventEmitter2({
-    wildcard: true,
-    delimiter: ".",
-    maxListeners: 20,
-  });
+  const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
 
-  const { endpoint, token } = _hull;
+  const socket = io(`${endpoint}/${id}`);
 
   function setup() {
-    return Promise.all([
-      getQueryStringIds(),
-      getAnalyticsIds(),
-      getHullIds()
-    ])
-    .then(ids => findId(ids))
-    .then((hash = {}) => fetchUserData({ endpoint, token }, hash))
-    .then(user => emitter.emit("user.update", user));
+    const search = hull
+      ? Promise.all(getHullIds())
+      : Promise.all([getLocalStorage(), getQueryStringIds(), getIntercomIds(), getHullIds(), getAnalyticsIds()]);
+
+    search.then((ids) => {
+      const found = findId(ids);
+      if (!isEmpty(found)) return found;
+      setTimeout(setup, 500);
+      return null;
+    },
+      err => console.log(err)
+    )
+    .then((query = {}) => {
+      if (!query) return null;
+      socket.emit("user.fetch", { id, query });
+      return true;
+    },
+      err => console.log(err)
+    );
   }
 
   setup();
+  socket.on("user.update", (response = {}) => userUpdate({ response }));
+  socket.on("room.joined", (res) => { console.log("joined Room", res); });
+  socket.on("room.error", (res) => { console.log("error", res); });
+  socket.on("close", ({ message }) => { console.log(message); });
+};
 
-  _hull.emitter = emitter;
-  return emitter;
-})();
+if (window.Hull) {
+  window.Hull.onEmbed(onEmbed);
+} else {
+  onEmbed();
+}

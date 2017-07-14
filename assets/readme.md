@@ -1,17 +1,38 @@
-# Client-side access to User data
+# Browser access to User data
 
 This connector makes data from Hull accessible in the browser,
 so you can use it to personalize the page in realtime.
 
 To use it:
 
-1. In the Settings tab, chose which users will ben enriched by selecting one or more segments
-2. Choose which attributes and segment names will be visible client-side.
+1. Whitelist the web pages from which this connector should be allowed to launch.
+1. In the Settings tab, choose which users will be forwarded by selecting one or more segments
+2. Choose which attributes and segment names will be accessible client-side.
 3. Paste the snippet in the page
-4. Write some Javascript to react to new and changed data in the user profile like so:
+4. In the Settings tab, write some javascript that will be run whenever the user is updated.
+
+The Script will have access to an object `user` and an object `segments` with the following shapes:
+
+```javascript
+  const user = {
+    ...whitelisted properties
+  }
+  const segments = [];
+  
+  console.log(user, segments);
+```
+
+
+We encourage you to write the script so that it can run multiple times without side effects (Be Idempotent). Users will come in multiple times.
+
+
+Let's say you want to tag the User with a custom Facebook Event for each segment they belong to and the name of their company.
+You'd then write:
 
 ```js
-_hull.emitter.on("user.update", function(user) {
-  console.log("User Updated", user);
+segments.map(function(segment){
+  fbq('trackCustom', 'In Segment '+segment, {
+    metrics_raised: user.clearbit_company.metrics_raised
+  });
 })
 ```

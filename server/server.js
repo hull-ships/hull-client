@@ -1,53 +1,73 @@
+import bluebird from "bluebird";
+import Redis from "redis";
 import express from "express";
-import path from "path";
-import { renderFile } from "ejs";
-import cors from "cors";
-import corsDelegate from "./lib/cors-delegate";
-import tokenOps from "./lib/token";
-import handleUser from "./handle-user";
+import { Cache } from "hull/lib/infra";
+import { notifHandler } from "hull/lib/utils";
+import Store from "./lib/store";
 import DevMode from "./dev-mode";
+import Socket from "./lib/socket";
+import userUpdateFactory from "./lib/user-update";
+import shipUpdateFactory from "./lib/ship-update";
 
 module.exports = function Server(options = {}) {
-  const { devMode, port, hostSecret, Hull } = options;
-  const { NotifHandler, Routes, Middleware } = Hull;
-  const { Readme, Manifest } = Routes;
+  const { devMode, port, hostSecret, Hull, redisUri } = options;
+  const { Middleware } = Hull;
 
   const app = express();
+  const connector = new Hull.Connector({ port, hostSecret, segmentFilterSetting: "synchronized_segments" });
+  connector.setupApp(app);
 
   if (devMode) app.use(DevMode());
 
-  app.set("views", `${__dirname}/../views`);
-  app.set("view engine", "ejs");
-  app.engine("html", renderFile);
-  app.use(express.static(path.resolve(__dirname, "..", "dist")));
-  app.use(express.static(path.resolve(__dirname, "..", "assets")));
+  const hullClient = Middleware({ hostSecret, fetchShip: true });
+  const cacheMiddleware = new Cache().contextMiddleware();
+  const hullWrapper = (req = {}, res = {}, callback) =>
+    cacheMiddleware(req, res, () =>
+      hullClient(req, res, () => callback(req, res)
+    )
+  );
 
-  app.get("/manifest.json", Manifest(__dirname));
-  app.get("/", Readme);
-  app.get("/readme", Readme);
+  bluebird.promisifyAll(Redis.RedisClient.prototype);
+  bluebird.promisifyAll(Redis.Multi.prototype);
 
-  app.post("/notify", NotifHandler({
+  const redis = Redis.createClient(redisUri);
+  const store = Store(redis);
+
+  const Sockets = {};
+
+  const { sendUpdate, onConnection, io } = Socket({
+    redisUri,
+    store,
+    Hull,
+    hullWrapper,
+    app: connector.startApp(app)
+  });
+
+  const shipUpdate = shipUpdateFactory({ store, Sockets, onConnection, io });
+  const userUpdate = userUpdateFactory({ sendUpdate, store });
+
+  app.post("/notify", notifHandler({
     hostSecret,
     groupTraits: true,
     onError: (message, status) => console.warn("Error", status, message),
     handlers: {
-      "user:update": function userUpdate() {},
-      "segment:update": function segmentUpdate() {}
+      "user:update": (ctx, messages) => {
+        shipUpdate(ctx);
+        messages.map(message => userUpdate(ctx, message));
+      },
+      "ship:update": shipUpdate,
+      "segment:update": shipUpdate
     }
   }));
 
-  const { encrypt, parse } = tokenOps({ hostSecret });
-
-  const hullClient = Middleware({ hostSecret, fetchShip: true });
-
   app.get("/admin.html", hullClient, (req, res) => {
     const { config } = req.hull;
-    res.render("admin.html", { token: encrypt(config), host: req.hostname });
+    const { ship: id } = config;
+    res.render("admin.html", { id, host: req.hostname });
   });
 
-  app.get("/user", parse, hullClient, cors(corsDelegate), handleUser);
 
   Hull.logger.info("started", { port });
-  app.listen(port);
+
   return app;
 };
