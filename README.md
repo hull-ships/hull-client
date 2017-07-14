@@ -13,7 +13,7 @@ If you want your own instance: [![Deploy](https://www.herokucdn.com/deploy/butto
 ### Developement setup :
 
 ```sh
-git clone git@github.com:hull-ships/hull-slack.git
+git clone git@github.com:hull-ships/hull-browser.git
 cd hull-browser
 yarn
 npm run ngrok # Serves connector on `https://browser.eu.ngrok.io` - See `package.json` 
@@ -32,7 +32,7 @@ which in turn will broadcast it to all the Rooms with that user's `ID`, `externa
 
 ### Logged events
 
-Here are the events that the Slack connector tracks
+Here are the events that the Browser connector tracks
 
 - `outgoing.user.fetch.error` - An error happened when a browser asked for info about a user
 - `incoming.connection.start` - Started Socket.io connection
