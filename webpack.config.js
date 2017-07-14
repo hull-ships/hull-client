@@ -1,6 +1,5 @@
 const path = require("path");
 const webpack = require("webpack");
-const Visualizer = require("webpack-visualizer-plugin");
 
 let plugins = [];
 
@@ -20,6 +19,7 @@ if (process.env.NODE_ENV === "production") {
     })
   ];
 } else {
+  const Visualizer = require("webpack-visualizer-plugin");
   plugins = [new Visualizer()];
 }
 
@@ -60,7 +60,10 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "babel-loader",
+        query: {
+          plugins: ["lodash"]
+        }
       }
     ]
   }
