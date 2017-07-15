@@ -12,14 +12,16 @@ import getIntercomIds from "./lib/intercom";
 import userUpdate from "./lib/user-update";
 
 
-const onEmbed = (hull, me, ship) => {
+const onEmbed = (rootNode, deployment, hull) => {
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
   let id;
   let endpoint;
   if (scriptTag) {
     id = scriptTag.getAttribute("data-hull-id");
     endpoint = scriptTag.getAttribute("data-hull-endpoint");
-  } else if (hull && ship) {
+  } else if (hull && deployment) {
+    const { ship /* , platform */ } = deployment;
+    // const { id: platformId } = platform;
     id = ship.id;
     endpoint = ship.source_url;
   }
