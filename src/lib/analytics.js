@@ -13,10 +13,11 @@ export default function getAnalyticsId() {
       const user = analytics.user();
       const externalId = user.id();
       const anonymousId = user.anonymousId();
+      const email = user.traits().email;
       intercom().then((ids = {}) => {
         // Handle the async Intercom load by Segment;
         if (!isEmpty(ids)) return resolve(ids);
-        return resolve({ anonymous_id: anonymousId, external_id: externalId });
+        return resolve({ anonymous_id: anonymousId, external_id: externalId, email });
       });
     });
   });

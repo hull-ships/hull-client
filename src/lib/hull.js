@@ -10,8 +10,8 @@ export default function getHullIds() {
       const { anonymousId } = hull.config();
       if (!me) return resolve({ anonymous_id: anonymousId });
 
-      const { external_id, id } = me;
-      return resolve({ id, external_id, anonymous_id: anonymousId });
+      const { external_id, id, email } = me;
+      return resolve({ id, external_id, anonymous_id: anonymousId, email });
     });
   });
 }

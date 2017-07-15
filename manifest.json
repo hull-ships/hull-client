@@ -2,6 +2,7 @@
   "name": "Browser Personalization",
   "description": "Get access to whitelisted attributes and segments from the Browser in realtime",
   "picture": "picture.png",
+  "index": "ship.js",
   "version": "0.0.3",
   "admin": "/admin.html",
   "tags": [

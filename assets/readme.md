@@ -25,7 +25,6 @@ The Script will have access to an object `user` and an object `segments` with th
 
 We encourage you to write the script so that it can run multiple times without side effects (Be Idempotent). Users will come in multiple times.
 
-
 Let's say you want to tag the User with a custom Facebook Event for each segment they belong to and the name of their company.
 You'd then write:
 
@@ -36,3 +35,16 @@ segments.map(function(segment){
   });
 })
 ```
+
+
+# Identity Resolution
+
+When installed from `Hull.js`, the connector fetches the user ID from Hull.
+
+When installed as a code snippet, the connector will look for identifiers, in the following order:
+
+- A variable called `hull_id` in Local Storage
+- `ajs_email`, `ajs_uid`, `ajs_aid` fields in the Querystring (Segments's Querystring API)
+- Intercom's `visitor ID`
+- Hull's `anonymousId`, `externalId`, `hullId`, `email`
+- Segment's `userId`, `anonymousId`, `email`

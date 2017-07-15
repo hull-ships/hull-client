@@ -3,6 +3,7 @@ import _ from "lodash";
 import userPayload from "./user-payload";
 
 const fetchUser = ({ client, ship, id }) => {
+  // Here it would be easier to just rely on a `hull.asUser` but we don't have permissions to lookup user report based on just those.
   return client
     .asUser({ id })
     .get(`/${id}/user_report`)
