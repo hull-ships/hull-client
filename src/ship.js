@@ -36,7 +36,7 @@ const onEmbed = (rootNode, deployment, hull) => {
 
   function setup() {
     const search = hull
-      ? Promise.all(getHullIds())
+      ? Promise.all([getHullIds()])
       : Promise.all([getLocalStorage(), getQueryStringIds(), getIntercomIds(), getHullIds(), getAnalyticsIds()]);
 
     search.then((ids) => {
