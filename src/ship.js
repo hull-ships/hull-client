@@ -14,9 +14,12 @@ import userUpdate from "./lib/user-update";
 
 const onEmbed = (hull, me, ship) => {
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
-  let id = scriptTag.getAttribute("data-hull-id");
-  let endpoint = scriptTag.getAttribute("data-hull-endpoint");
-  if (hull && ship) {
+  let id;
+  let endpoint;
+  if (scriptTag) {
+    id = scriptTag.getAttribute("data-hull-id");
+    endpoint = scriptTag.getAttribute("data-hull-endpoint");
+  } else if (hull && ship) {
     id = ship.id;
     endpoint = ship.source_url;
   }
