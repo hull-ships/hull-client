@@ -14,9 +14,13 @@ module.exports = function factory({ sendUpdate, store }) {
     return cache
     .set(user.id, update)
     .then(() => {
-      client.asUser(user).logger.info("outgoing.user.success", { id: user.id, update });
-      // Then send it out
-      sendUpdate({ ship, user, update });
+      if (update.message === "ok") {
+        client.asUser(user).logger.info("outgoing.user.success", { id: user.id, update });
+        // Then send it out
+        sendUpdate({ ship, user, update });
+      } else {
+        client.asUser(user).logger.info("outgoing.user.skip", { id: user.id, update });
+      }
     });
   };
 };

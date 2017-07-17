@@ -18,7 +18,7 @@ const fetchUser = ({ client, ship, id }) => {
 export default function socketFactory({ Hull, store, sendUpdate }) {
   const { get, lru } = store;
   return function onConnection(socket) {
-    const close = (client, message = "Closing", action = "outgoing.user.fetch.error") => {
+    const close = (client, message = "Closing", action = "incomign.user.fetch.error") => {
       socket.emit("close", { message });
       socket.disconnect(true);
       client.logger.error(action, { message });
@@ -66,10 +66,10 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
 
           // If we have a Hull ID, then can use LRU. Othwerwise, we wait for the Update to send through websockets.
           if (query.id) {
-            userClient.logger.info("outgoing.user.fetch.start", query);
+            userClient.logger.info("incomign.user.fetch.start", query);
             lru(id).getOrSet(query.id, () => fetchUser({ client, ship, id }), 30000)
             .then((update) => {
-              userClient.logger.info("outgoing.user.fetch.success", { id: query.id, update });
+              userClient.logger.info("incomign.user.fetch.success", { id: query.id, update });
               // Once joined, send update.
               sendUpdate({ ship, update });
             }, (err) => {
@@ -82,7 +82,7 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
         },
 
         (err) => {
-          Hull.logger.error("outgoing.user.fetch.error", { message: err });
+          Hull.logger.error("incomign.user.fetch.error", { message: err });
           throw err;
         }
       );

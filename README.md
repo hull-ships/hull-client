@@ -39,10 +39,10 @@ Here are the events that the Browser connector tracks
 - `incoming.connection.error` - Failed establishing connection. see error message
 - `incoming.connection.success` - Established connection successfully
 - `incoming.user.join-channel` - Joined `channel` (any User ID we have available)
-- `outgoing.user.fetch.start` - Started fetching user data from a `Hull ID` (we have one after first succcessful connection)
-- `outgoing.user.fetch.success` - Success fetching a user
-- `outgoing.user.fetch.error` - Error while searching for a User
-- `outgoing.user.start` - We received a User Update, attempt to send it to all rooms
+- `incoming.user.fetch.success` - Success fetching a user
+- `incoming.user.fetch.error` - Error while searching for a User
+- `incoming.user.start` - We received a User Update, attempt to send it to all rooms
+- `incoming.user.fetch.start` - Started fetching user data from a `Hull ID` (we have one after first succcessful connection)
 - `outgoing.user.success` - Success in sending the user update to rooms.
 
 # Environment variables
