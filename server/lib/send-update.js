@@ -1,16 +1,9 @@
 import { map } from "lodash";
 
 export default function sendUpdateFactory({ io }) {
-  return ({ ship, user, update }) => {
+  return ({ ship, update, rooms = [] }) => {
     // Send the update to every identifiable id for this user.
-    const ids = user ? [
-      ...(user.anonymous_ids || []),
-      user.external_id,
-      user.id,
-      user.email,
-      user.contact_email
-    ] : { id: update.user.id };
-    map(ids, (id) => {
+    map(rooms, (id) => {
       if (!id) return true;
       return io
         .of(ship.id)

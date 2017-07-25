@@ -1,16 +1,22 @@
 import URI from "urijs";
 import _ from "lodash";
 import userPayload from "./user-payload";
+import getRooms from "./get-rooms";
 
-const fetchUser = ({ client, ship, id }) => {
+const fetchUser = ({ client, ship }) => {
   // Here it would be easier to just rely on a `hull.asUser` but we don't have permissions to lookup user report based on just those.
+  console.log('Fetch user')
   return client
-    .asUser({ id })
-    .get(`/${id}/user_report`)
+    .get(`/me/user_report`)
     .then((user) => {
+      console.log('Fetch user result', user)
       if (!user || !user.id) throw new Error("No user found", user);
-      return userPayload({ user, ship, client });
+      return {
+        user,
+        update: userPayload({ user, ship, client })
+      };
     }, (err) => {
+      console.log('Error fetching user', err)
       throw err;
     });
 };
@@ -18,12 +24,11 @@ const fetchUser = ({ client, ship, id }) => {
 export default function socketFactory({ Hull, store, sendUpdate }) {
   const { get, lru } = store;
   return function onConnection(socket) {
-    const close = (client, message = "Closing", action = "incomign.user.fetch.error") => {
+    const close = (client, message = "closing connection", action = "incoming.user.fetch.error") => {
       socket.emit("close", { message });
       socket.disconnect(true);
       client.logger.error(action, { message });
     };
-
     Hull.logger.debug("incoming.connection.start");
 
     socket.on("user.fetch", ({ id, query = {} }) => {
@@ -41,7 +46,7 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
           const { whitelisted_domains = [] } = private_settings;
 
           const client = new Hull({ ...config, id });
-          const userClient = client.asUser(query);
+          const userClient = client.asUser(query, { scopes: ["admin"] });
 
           // userClient.logger.debug("user.fetch.check", { ship: !!ship, client: !!client });
 
@@ -50,8 +55,8 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
 
           // Only continue if domain is whitelisted.
           userClient.logger.debug("incoming.connection.check", { origin: URI(origin).hostname() });
-          if (!_.includes(_.map(whitelisted_domains, d => URI(d).hostname()), URI(origin).hostname())) {
-            return close(client, `Unauthorized domain ${URI(origin).hostname()}`, "incoming.connection.error");
+          if (!_.includes(_.map(whitelisted_domains, d => URI(`https://${d.replace(/http(s)?:\/\//, "")}`).hostname()), URI(origin).hostname())) {
+            return close(client, `Unauthorized domain ${URI(origin).hostname()}. Authorized: ${JSON.stringify(_.map(whitelisted_domains, d => URI(d).hostname()))}`, "incoming.connection.error");
           }
 
           userClient.logger.info("incoming.connection.success");
@@ -60,29 +65,32 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
 
           // Join User to channel with this Hull user id.
           _.map(query, (v) => {
-            userClient.logger.info("incoming.user.join-channel", v);
+            userClient.logger.info("incoming.user.join-room", v);
             socket.join(v);
+            socket.emit("room.joined", v);
           });
 
           // If we have a Hull ID, then can use LRU. Othwerwise, we wait for the Update to send through websockets.
-          if (query.id) {
-            userClient.logger.info("incomign.user.fetch.start", query);
-            lru(id).getOrSet(query.id, () => fetchUser({ client, ship, id }), 30000)
-            .then((update) => {
-              userClient.logger.info("incomign.user.fetch.success", { id: query.id, update });
-              // Once joined, send update.
-              sendUpdate({ ship, update });
-            }, (err) => {
-              socket.emit("user.error", { message: "not_found", user: {}, segments: {} });
-              close(client, err.message);
-              throw err;
-            });
-          }
+          userClient.logger.info("incoming.user.fetch.start", query);
+          const firstId = query.id || query.external_id || query.anonymous_id;
+
+          lru(id).getOrSet(firstId, () => fetchUser({ client: userClient, ship, id }), 30000)
+          .then(({ user, update }) => {
+            userClient.logger.info("incoming.user.fetch.success", { update });
+
+            // Once joined, send update.
+            sendUpdate({ ship, update, rooms: getRooms(user) });
+          }, (err = {}) => {
+            socket.emit("user.error", { message: "not_found", user: {}, segments: {} });
+            console.log("user error", err);
+            close(client, err.message);
+            throw err;
+          });
           return true;
         },
 
         (err) => {
-          Hull.logger.error("incomign.user.fetch.error", { message: err });
+          Hull.logger.error("incoming.user.fetch.error", { message: err });
           throw err;
         }
       );

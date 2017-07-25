@@ -16,24 +16,23 @@ const onEmbed = (rootNode, deployment, hull) => {
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
   let id;
   let endpoint;
-  if (scriptTag) {
-    id = scriptTag.getAttribute("data-hull-id");
-    endpoint = scriptTag.getAttribute("data-hull-endpoint");
-  } else if (hull && deployment) {
+  if (hull && deployment) {
     const { ship /* , platform */ } = deployment;
     // const { id: platformId } = platform;
     id = ship.id;
-    endpoint = ship.source_url;
+    endpoint = `${ship.source_url.replace(/\/$/, '')}`;
+  } else if (scriptTag) {
+    id = scriptTag.getAttribute("data-hull-id");
+    endpoint = scriptTag.getAttribute("data-hull-endpoint");
   }
 
   if (!id || !endpoint) {
-    console.log("Could not find id or Endpoint on the Script tag. Did you copy/paste it correctly?");
+    return console.log("Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?");
   }
 
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
 
   const socket = io(`${endpoint}/${id}`);
-
   function setup() {
     const search = hull
       ? Promise.all([getHullIds()])
@@ -49,6 +48,7 @@ const onEmbed = (rootNode, deployment, hull) => {
     )
     .then((query = {}) => {
       if (!query) return null;
+      console.log('user.fetch', { id, query })
       socket.emit("user.fetch", { id, query });
       return true;
     },
@@ -58,7 +58,7 @@ const onEmbed = (rootNode, deployment, hull) => {
 
   setup();
   socket.on("user.update", (response = {}) => userUpdate({ response }));
-  socket.on("room.joined", (res) => { console.log("joined Room", res); });
+  socket.on("room.joined", (res) => { console.log("Joined Room", res); });
   socket.on("room.error", (res) => { console.log("error", res); });
   socket.on("close", ({ message }) => { console.log(message); });
 };

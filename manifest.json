@@ -16,7 +16,7 @@
       "title": "Code to be run everytime user is updated",
       "type": "string",
       "format": "code",
-      "default": "console.log(user, segments)"
+      "default": "console.log('Received User update', user, segments)"
     }
   ],
   "private_settings": [
@@ -32,7 +32,8 @@
     },
     {
       "name": "synchronized_segments",
-      "title": "Only users from these segments will be sent to the browser",
+      "title": "Restrict to users from these segments",
+      "description": "If segments are selected, then only users belonging to those segments will be sent to the website",
       "type": "array",
       "format": "segment",
       "items": {

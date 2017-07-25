@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 export default function ({ user, segments, client, ship = {} }) {
-  const { private_settings, settings } = ship;
+  const { private_settings = {}, settings = {} } = ship;
 
   const {
     public_traits = [],
@@ -12,10 +12,13 @@ export default function ({ user, segments, client, ship = {} }) {
 
   const segmentIds = _.map(user.segments || segments, "id");
 
-  if (!synchronized_segments.length || !_.intersection(synchronized_segments, segmentIds).length) {
+  // No Segment: Everyone goes there
+  if (synchronized_segments.length && !_.intersection(synchronized_segments, segmentIds).length) {
     return {
       message: "private",
-      user: {},
+      user: {
+        id: user.id
+      },
       segments: {}
     };
   }

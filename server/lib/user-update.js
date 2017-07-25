@@ -1,26 +1,27 @@
 import userPayload from "./user-payload";
+import getRooms from "./get-rooms";
 
 module.exports = function factory({ sendUpdate, store }) {
-  const { lru } = store;
   return function handle({ ship, client }, { user, segments }) {
     const update = userPayload({ user, segments, client, ship });
-    client.logger.info("outgoing.user.start", { id: user.id, update });
+    const userClient = client.asUser(user);
+    const rooms = getRooms(user);
 
-    // Cache the response
-    const cache = lru(ship.id);
-    if (!cache) {
-      return sendUpdate({ ship, user, update });
-    }
-    return cache
-    .set(user.id, update)
-    .then(() => {
-      if (update.message === "ok") {
-        client.asUser(user).logger.info("outgoing.user.success", { id: user.id, update });
-        // Then send it out
-        sendUpdate({ ship, user, update });
-      } else {
-        client.asUser(user).logger.info("outgoing.user.skip", { id: user.id, update });
-      }
+    userClient.logger.info("outgoing.user.start", { rooms, update });
+
+    // Prevents trying to create LRU for random Ship IDs.
+    store.get(ship.id).then(function hasShipCached(cached) {
+      if (!cached) return userClient.logger.info("outgoing.user.skip", { update });
+      return store.lru(ship.id)
+      .set(user.id, update)
+      .then(() => {
+        if (update.message === "ok") {
+          userClient.logger.info("outgoing.user.success", { rooms, update });
+          sendUpdate({ ship, update, rooms });
+        } else {
+          userClient.logger.info("outgoing.user.skip", { rooms, update });
+        }
+      });
     });
   };
 };
