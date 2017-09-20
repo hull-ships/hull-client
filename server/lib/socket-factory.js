@@ -3,23 +3,27 @@ import _ from "lodash";
 import userPayload from "./user-payload";
 import getRooms from "./get-rooms";
 
-const fetchUser = ({ client, ship }) => {
-  // Here it would be easier to just rely on a `hull.asUser` but we don't have permissions to lookup user report based on just those.
-  console.log('Fetch user')
-  return client
-    .get(`/me/user_report`)
-    .then((user) => {
-      console.log('Fetch user result', user)
-      if (!user || !user.id) throw new Error("No user found", user);
-      return {
-        user,
-        update: userPayload({ user, ship, client })
-      };
-    }, (err) => {
-      console.log('Error fetching user', err)
-      throw err;
-    });
-};
+const fetchUser = ({ client, ship }) => client
+  .get("/me/user_report")
+  .then((user) => {
+    if (!user || !user.id) {
+      client.logger.info("outgoing.user.error", { message: "Not found" });
+      throw new Error("No user found", user);
+    }
+    client.logger.info("outgoing.user.success");
+    const { account } = user;
+
+    return {
+      user: _.omit(user, "account"),
+      account,
+      update: userPayload({ user, ship, client })
+    };
+  }, (err) => {
+    client.logger.info("outgoing.user.error", { error: err });
+    throw err;
+  });
+
+const getOneIdentier = (q = {}) => q.id || q.external_id || q.email || q.anonymous_id;
 
 export default function socketFactory({ Hull, store, sendUpdate }) {
   const { get, lru } = store;
@@ -64,11 +68,17 @@ export default function socketFactory({ Hull, store, sendUpdate }) {
           // Starting the actual outgoing data sequence
 
           // Join User to channel with this Hull user id.
-          _.map(query, (v) => {
-            userClient.logger.info("incoming.user.join-room", v);
-            socket.join(v);
-            socket.emit("room.joined", v);
-          });
+          // _.map(query, (v) => {
+          //   userClient.logger.info("incoming.user.join-room", v);
+          //   socket.join(v);
+          //   socket.emit("room.joined", v);
+          // });
+
+          // Only join one room to avoid multi-posting
+          const identifier = getOneIdentier(query);
+          userClient.logger.info("incoming.user.join-room", identifier);
+          socket.join(identifier);
+          socket.emit("room.joined", identifier);
 
           // If we have a Hull ID, then can use LRU. Othwerwise, we wait for the Update to send through websockets.
           userClient.logger.info("incoming.user.fetch.start", query);

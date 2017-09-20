@@ -2,8 +2,8 @@ import userPayload from "./user-payload";
 import getRooms from "./get-rooms";
 
 module.exports = function factory({ sendUpdate, store }) {
-  return function handle({ ship, client }, { user, segments }) {
-    const update = userPayload({ user, segments, client, ship });
+  return function handle({ ship, client }, { events, user, segments, account }) {
+    const update = userPayload({ user, events, account, segments, client, ship });
     const userClient = client.asUser(user);
     const rooms = getRooms(user);
 

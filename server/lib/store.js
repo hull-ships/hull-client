@@ -15,6 +15,14 @@ export default function Store(redis) {
   };
 
 
+  /**
+   * Expose a cache system to store runtime settings
+   * @param  {Object} ctx the Context object created by a valid Hull middleware.
+   * @return {function} setup: prepare LRU and set ship cache for a specific ship
+   * @return {function} get: get ship settings from an ID
+   * @return {function} set: set ship settings by ID
+   * @return {function} lru: get a ship-scoped LRU so we can set/get users from it. Each ship gets it's own LRU
+   */
   const setup = (ctx = {}) => {
     if (_.size(ctx)) {
       // Cache the current config.

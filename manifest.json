@@ -33,7 +33,17 @@
     {
       "name": "synchronized_segments",
       "title": "Restrict to users from these segments",
-      "description": "If segments are selected, then only users belonging to those segments will be sent to the website",
+      "description": "Data will be sent to Browser only for users belonging to those segments",
+      "type": "array",
+      "format": "segment",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    {
+      "name": "public_segments",
+      "title": "Segment names that can be forwarded to Browser",
       "type": "array",
       "format": "segment",
       "items": {
@@ -43,7 +53,7 @@
     },
     {
       "name": "public_traits",
-      "title": "Traits that will be sent",
+      "title": "Traits that can be forwarded to Browser",
       "type": "array",
       "format": "trait",
       "items": {
@@ -52,10 +62,10 @@
       "default": ["domain", "email"]
     },
     {
-      "name": "public_segments",
-      "title": "Segment names that will be sent",
+      "name": "public_events",
+      "title": "Events that can be forwarded to Browser",
       "type": "array",
-      "format": "segment",
+      "format": "event",
       "items": {
         "type": "string"
       },
