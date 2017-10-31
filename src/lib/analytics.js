@@ -7,8 +7,9 @@ import intercom from "./intercom";
 export default function getAnalyticsId() {
   return new Promise(function getId(resolve /* , reject */) {
     const { analytics } = window;
-    if (!analytics) return resolve({});
+    if (!analytics || !analytics.user) return resolve({});
     setTimeout(() => resolve({}), 500);
+
     return analytics.ready(function analyticsReady() {
       const user = analytics.user();
       const externalId = user.id();
