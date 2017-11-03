@@ -28,10 +28,8 @@ const onEmbed = (rootNode, deployment, hull) => {
     endpoint = scriptTag.getAttribute("data-hull-endpoint");
   }
 
-  console.log(shipId, platformId);
 
   if (!shipId || !endpoint) {
-    debugger
     return console.log("Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?");
   }
 
