@@ -27,8 +27,24 @@
     ]
   },
   "scripts": {
-    "start": "NODE_ENV=production node -r newrelic lib",
+    "build": "builder run build",
+    "build:client": "builder run build:client",
+    "build:server": "builder run build:server",
+    "clean": "builder run clean",
+    "prettier": "builder run prettier",
+    "flow": "builder run flow",
+    "lint": "builder run lint",
+    "precommit": "builder run precommit",
     "postinstall": "builder --expand-archetype run build",
+    "update": "builder run update",
+    "test:client": "builder run test:client",
+    "test:coverage": "builder run test:coverage",
+    "test:lint": "builder run test:lint",
+    "test:modules": "builder run test:modules",
+    "test:specs": "builder run test:specs",
+    "test:units": "builder run test:units",
+    "start": "NODE_ENV=production node -r newrelic lib",
+    "dev": "builder run dev",
     "test": "builder run npm:test"
   },
   "dependencies": {
