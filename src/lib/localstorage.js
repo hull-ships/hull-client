@@ -25,6 +25,6 @@ export function setLocalStorage(value) {
 
 export function deleteLocalStorage() {
   if (typeof Storage !== "undefined") {
-    window.localStorage.setItem("hull", undefined);
+    window.localStorage.setItem("hull_browser", undefined);
   }
 }

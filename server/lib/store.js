@@ -45,13 +45,13 @@ export default function Store(redis) {
       }
 
       const { ship: id } = config;
-      const { private_settings } = ship;
+      const { private_settings, settings } = ship;
       if (!private_settings) {
         return Promise.reject(new Error("No private_settings"));
       }
 
       lru(id);
-      return set(id, { ship: { id, private_settings }, config });
+      return set(id, { ship: { id, private_settings, settings }, config });
     }
     return Promise.reject(new Error("No context object"));
   };
