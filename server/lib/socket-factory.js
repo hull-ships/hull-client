@@ -36,6 +36,7 @@ export default function socketFactory({ Hull, store, sendPayload }) {
       }
 
       try {
+        // There's probably a simpler way to access a connector ship cache...
         const cached = await get(shipId);
         const { config, ship } = cached;
 
