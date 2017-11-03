@@ -5,7 +5,7 @@ import find from "lodash/find";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import io from "socket.io-client";
-import { setLocalStorage, getLocalStorage, deleteLocalStorage } from "./lib/localstorage";
+import { setLocalStorage, getLocalStorageId, getLocalStorage, deleteLocalStorage } from "./lib/localstorage";
 import getQueryStringIds from "./lib/querystring";
 import getAnalyticsIds from "./lib/analytics";
 import getHullIds from "./lib/hull";
@@ -42,7 +42,7 @@ const onEmbed = (rootNode, deployment, hull) => {
   function setup() {
     const search = hull
       ? Promise.all([getHullIds()])
-      : Promise.all([getLocalStorage(), getQueryStringIds(), getIntercomIds(), getHullIds(), getAnalyticsIds()]);
+      : Promise.all([getLocalStorageId(), getQueryStringIds(), getIntercomIds(), getHullIds(), getAnalyticsIds()]);
 
     search.then((ids) => {
       const found = findId(ids);
