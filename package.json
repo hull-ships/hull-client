@@ -27,24 +27,8 @@
     ]
   },
   "scripts": {
-    "build": "builder run build",
-    "build:client": "builder run build:client",
-    "build:server": "builder run build:server",
-    "clean": "builder run clean",
-    "prettier": "builder run prettier",
-    "flow": "builder run flow",
-    "lint": "builder run lint",
-    "precommit": "builder run precommit",
-    "postinstall": "builder run build --expand-archetype",
-    "update": "builder run update",
-    "test:client": "builder run test:client",
-    "test:coverage": "builder run test:coverage",
-    "test:lint": "builder run test:lint",
-    "test:modules": "builder run test:modules",
-    "test:specs": "builder run test:specs",
-    "test:units": "builder run test:units",
     "start": "NODE_ENV=production node -r newrelic lib",
-    "dev": "builder run dev",
+    "postinstall": "builder --expand-archetype run build",
     "test": "builder run npm:test"
   },
   "dependencies": {
@@ -55,7 +39,7 @@
     "es6-promise": "^4.1.1",
     "express": "^4.16.2",
     "hull": "^0.13.2",
-    "hull-connector": "^1.0.12",
+    "hull-connector": "^1.0.13",
     "jwt-simple": "^0.5.1",
     "lodash": "^4.17.4",
     "query-string": "^5.0.1",
@@ -76,7 +60,7 @@
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
-    "hull-connector-dev": "^1.0.12",
+    "hull-connector-dev": "^1.0.13",
     "react-hot-loader": "^3.1.1",
     "reactotron-react-js": "^1.12.2",
     "reactotron-redux": "^1.12.2"
