@@ -1,7 +1,7 @@
 {
-  "name": "Hull + Clearbit",
-  "description": "A Hull Integration for Clearbit.",
-  "repository": "https://github.com/hull-ships/hull-clearbit",
+  "name": "Hull Browser",
+  "description": "A Hull Integration for Browser Personalization.",
+  "repository": "https://github.com/hull-ships/hull-browser",
   "website": "http://www.hull.io",
   "success_url": "/readme",
   "env": {

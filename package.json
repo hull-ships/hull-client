@@ -54,7 +54,7 @@
     "es6-promise": "^4.1.1",
     "express": "^4.16.2",
     "hull": "^0.13.2",
-    "hull-connector": "^1.0.11",
+    "hull-connector": "^1.0.12",
     "jwt-simple": "^0.5.1",
     "lodash": "^4.17.4",
     "query-string": "^5.0.1",
@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
-    "hull-connector-dev": "^1.0.11",
+    "hull-connector-dev": "^1.0.12",
     "react-hot-loader": "^3.1.1",
     "reactotron-react-js": "^1.12.2",
     "reactotron-redux": "^1.12.2"
