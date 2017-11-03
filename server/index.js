@@ -7,6 +7,7 @@ const {
   NODE_ENV,
   OVERRIDE_FIREHOSE_URL,
   LOG_LEVEL,
+  REDIS_URL,
   PORT = 8082,
 } = process.env;
 
@@ -14,6 +15,7 @@ const options = {
   hostSecret: SECRET,
   devMode: NODE_ENV === 'development',
   port: PORT,
+  redisUri: REDIS_URL
   ngrok: {
     subdomain: pkg.name,
   },
