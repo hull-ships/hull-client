@@ -35,7 +35,7 @@
     "flow": "builder run flow",
     "lint": "builder run lint",
     "precommit": "builder run precommit",
-    "postinstall": "npm run build",
+    "postinstall": "builder run build --expand-archetype",
     "update": "builder run update",
     "test:client": "builder run test:client",
     "test:coverage": "builder run test:coverage",
