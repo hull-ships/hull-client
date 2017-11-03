@@ -1,4 +1,5 @@
 # Hull Browser Personalization
+# Installing
 
 Sends Hull customer data back in the page, so you can use it for personalization, segmentation and ad targeting.
 
@@ -16,10 +17,15 @@ If you want your own instance: [![Deploy](https://www.herokucdn.com/deploy/butto
 git clone git@github.com:hull-ships/hull-browser.git
 cd hull-browser
 yarn
-npm run ngrok # Serves connector on `https://browser.eu.ngrok.io` - See `package.json` 
-npm run start:dev # starts in development mode
-npm run build # builds the app
+yarn dev # Serves connector on `https://hull-browser.eu.ngrok.io` - See `package.json` 
+yarn build # builds the app
 ```
+
+#### Note
+
+Connector will be primed on each User notification or Ship Update.
+Which means if you just rebooted, and do a page view before server has sent an update, it will be skipped.
+Keep this in mind when developing
 
 ### How it works
 
@@ -51,6 +57,7 @@ Here are the events that the Browser connector tracks
 SECRET="A randomly created secret. Make it long and complex"
 REDIS_URL="Redis connection URI"
 ```
+
 
 On Heroku, don't forget to setup Session Affinity to have users always hit the same node.
 It's not mandatory since we use Redis behind the scenes for a LRU and a Config cache, but it's always cleaner.

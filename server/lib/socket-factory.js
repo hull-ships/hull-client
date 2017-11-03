@@ -1,110 +1,115 @@
 import URI from "urijs";
 import _ from "lodash";
-import userPayload from "./user-payload";
-import getRooms from "./get-rooms";
+import fetchUser from "./fetch-user";
 
-const fetchUser = ({ client, ship }) => client
-  .get("/me/user_report")
-  .then((user) => {
-    if (!user || !user.id) {
-      client.logger.info("outgoing.user.error", { message: "Not found" });
-      throw new Error("No user found", user);
-    }
-    client.logger.info("outgoing.user.success");
-    const { account } = user;
+const USER_NOT_FOUND = {
+  message: "not_found",
+  user: {},
+  account: {},
+  segments: {}
+};
 
-    return {
-      user: _.omit(user, "account"),
-      account,
-      update: userPayload({ user, ship, client })
-    };
-  }, (err) => {
-    client.logger.info("outgoing.user.error", { error: err });
-    throw err;
-  });
+const getIdentifier = (q = {}) => (q.id || q.external_id || q.email || q.anonymous_id);
+const loggerFactory = (socket, Hull) => (action = "incoming.user.fetch.error", message = "closing connection", client = Hull) => {
+  socket.emit("close", { message });
+  socket.disconnect(true);
+  client.logger.error(action, { message });
+};
+const isWhitelisted = (domains, hostname) => _.includes(_.map(domains, d => URI(`https://${d.replace(/http(s)?:\/\//, "")}`).hostname()), hostname);
 
-const getOneIdentier = (q = {}) => q.id || q.external_id || q.email || q.anonymous_id;
-
-export default function socketFactory({ Hull, store, sendUpdate }) {
+export default function socketFactory({ Hull, store, sendPayload }) {
   const { get, lru } = store;
-  return function onConnection(socket) {
-    const close = (client, message = "closing connection", action = "incoming.user.fetch.error") => {
-      socket.emit("close", { message });
-      socket.disconnect(true);
-      client.logger.error(action, { message });
-    };
+
+  return async function onConnection(socket) {
+    const logClose = loggerFactory(socket, Hull);
     Hull.logger.debug("incoming.connection.start");
 
-    socket.on("user.fetch", ({ id, query = {} }) => {
-      if (!_.size(query)) return close(Hull, `Empty Query (${id})`, "incoming.connection.error");
+    async function onUserFetch({ shipId, platformId, claims = {} }) {
+      if (!_.size(claims)) {
+        return logClose("incoming.connection.error", `Empty Claims (${shipId})`);
+      }
+
       const { origin } = socket.request.headers;
-      if (!origin) return close(`Not connecting socket: No Origin (${id})`, "incoming.connection.error");
 
+      if (!origin) {
+        return logClose("incoming.connection.error", `Not connecting socket: No Origin (${shipId})`);
+      }
 
-      get(id)
-        .then((cached) => {
-          const { config, ship } = cached;
-          if (!cached || !_.size(ship)) return close(Hull, "Cloud not find config in redis cache. will try at next page view");
+      try {
+        const cached = await get(shipId);
+        const { config, ship } = cached;
 
-          const { private_settings = {} } = ship;
-          const { whitelisted_domains = [] } = private_settings;
+        if (!cached || !_.size(ship)) {
+          return logClose("incoming.connection.error", "Cloud not find config in redis cache. will try at next page view");
+        }
 
-          const client = new Hull({ ...config, id });
-          const userClient = client.asUser(query, { scopes: ["admin"] });
+        const { private_settings = {} } = ship;
+        const { whitelisted_domains = [] } = private_settings;
+        const client = new Hull({ ...config, id: shipId });
+        const userClient = client.asUser(claims, { scopes: ["admin"] });
 
-          // userClient.logger.debug("user.fetch.check", { ship: !!ship, client: !!client });
+        const platformData = await client.get(platformId);
+        console.log(platformData);
 
-          // Warn if no valid domains specified.
-          if (!whitelisted_domains.length) return close(userClient, "No whitelisted domains", "incoming.connection.error");
+        if (!whitelisted_domains.length) {
+          return logClose("incoming.connection.error", "No whitelisted domains", userClient);
+        }
 
-          // Only continue if domain is whitelisted.
-          userClient.logger.debug("incoming.connection.check", { origin: URI(origin).hostname() });
-          if (!_.includes(_.map(whitelisted_domains, d => URI(`https://${d.replace(/http(s)?:\/\//, "")}`).hostname()), URI(origin).hostname())) {
-            return close(client, `Unauthorized domain ${URI(origin).hostname()}. Authorized: ${JSON.stringify(_.map(whitelisted_domains, d => URI(d).hostname()))}`, "incoming.connection.error");
+        userClient.logger.debug("incoming.connection.check", { origin: URI(origin).hostname() });
+
+        // Only continue if domain is whitelisted.
+        const hostname = URI(origin).hostname();
+        const whitelisted = isWhitelisted(whitelisted_domains, hostname);
+
+        if (!whitelisted) {
+          return logClose("incoming.connection.error", `Unauthorized domain ${hostname}. Authorized: ${JSON.stringify(_.map(whitelisted_domains, d => URI(d).hostname()))}`, client);
+        }
+
+        // Starting the actual outgoing data sequence
+        userClient.logger.info("incoming.connection.success");
+
+        // Only join one room to avoid multi-posting
+        const identifier = getIdentifier(claims);
+
+        userClient.logger.info("incoming.user.joinRoom", identifier);
+        socket.join(identifier);
+        socket.emit("room.joined", identifier);
+
+        userClient.logger.info("incoming.user.fetch.start", claims);
+
+        try {
+          let payload;
+          // If we have a Hull ID, then can use LRU. Othwerwise, we wait for the Update to send through websockets.
+          if (claims.id) {
+            payload = await lru(shipId).get(claims.id);
           }
 
-          userClient.logger.info("incoming.connection.success");
+          if (!payload) {
+            socket.emit("cache.miss", { shipId, claims });
+            payload = await fetchUser(userClient);
+          }
 
-          // Starting the actual outgoing data sequence
+          if (!payload) {
+            throw new Error("Can't find user");
+          }
 
-          // Join User to channel with this Hull user id.
-          // _.map(query, (v) => {
-          //   userClient.logger.info("incoming.user.join-room", v);
-          //   socket.join(v);
-          //   socket.emit("room.joined", v);
-          // });
+          // Once joined, send payload.
+          userClient.logger.info("incoming.user.fetch.success");
 
-          // Only join one room to avoid multi-posting
-          const identifier = getOneIdentier(query);
-          userClient.logger.info("incoming.user.join-room", identifier);
-          socket.join(identifier);
-          socket.emit("room.joined", identifier);
-
-          // If we have a Hull ID, then can use LRU. Othwerwise, we wait for the Update to send through websockets.
-          userClient.logger.info("incoming.user.fetch.start", query);
-          const firstId = query.id || query.external_id || query.anonymous_id;
-
-          lru(id).getOrSet(firstId, () => fetchUser({ client: userClient, ship, id }), 30000)
-          .then(({ user, update }) => {
-            userClient.logger.info("incoming.user.fetch.success", { update });
-
-            // Once joined, send update.
-            sendUpdate({ ship, update, rooms: getRooms(user) });
-          }, (err = {}) => {
-            socket.emit("user.error", { message: "not_found", user: {}, segments: {} });
-            console.log("user error", err);
-            close(client, err.message);
-            throw err;
-          });
-          return true;
-        },
-
-        (err) => {
-          Hull.logger.error("incoming.user.fetch.error", { message: err });
+          sendPayload({ client: userClient, ship, ...payload });
+        } catch (err) {
+          // Error happened, send no one.
+          socket.emit("user.error", USER_NOT_FOUND);
+          logClose(client, err.message);
           throw err;
         }
-      );
+      } catch (err) {
+        Hull.logger.error("incoming.user.fetch.error", { message: err });
+        throw err;
+      }
       return true;
-    });
+    }
+
+    socket.on("user.fetch", onUserFetch);
   };
 }

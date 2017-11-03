@@ -1,14 +1,34 @@
-import Hull from "hull";
-import Server from "./server";
+import Hull from 'hull';
+import server from './server';
+import pkg from '../package.json';
 
-if (process.env.LOG_LEVEL) {
-  Hull.logger.transports.console.level = process.env.LOG_LEVEL;
+const {
+  SECRET = '1234',
+  NODE_ENV,
+  OVERRIDE_FIREHOSE_URL,
+  LOG_LEVEL,
+  PORT = 8082,
+} = process.env;
+
+const options = {
+  hostSecret: SECRET,
+  devMode: NODE_ENV === 'development',
+  port: PORT,
+  ngrok: {
+    subdomain: pkg.name,
+  },
+  Hull,
+  clientConfig: {
+    firehoseUrl: OVERRIDE_FIREHOSE_URL,
+  },
+};
+
+if (LOG_LEVEL) {
+  Hull.logger.transports.console.level = LOG_LEVEL;
 }
 
-Server({
-  Hull,
-  redisUri: process.env.REDIS_URL || "//localhost:6379",
-  hostSecret: process.env.SECRET || "12345678902234567890",
-  devMode: process.env.NODE_ENV === "development",
-  port: process.env.PORT || 8082
-});
+Hull.logger.transports.console.json = true;
+Hull.logger.debug(`${pkg.name}.boot`);
+
+const app = server(options);
+Hull.logger.debug(`${pkg.name}.started`, { port: PORT });

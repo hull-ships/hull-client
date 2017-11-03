@@ -4,19 +4,19 @@
   "picture": "picture.png",
   "index": "ship.js",
   "version": "0.0.3",
-  "admin": "/admin.html",
   "tags": [
+    "smart-notifier",
     "incoming",
     "outgoing",
     "oneColumn"
   ],
-  "settings":[
+  "settings": [
     {
       "name": "script",
       "title": "Code to be run everytime user is updated",
       "type": "string",
       "format": "code",
-      "default": "console.log('Received User update', user, segments)"
+      "default": "console.log(user, segments)"
     }
   ],
   "private_settings": [
@@ -28,22 +28,13 @@
       "items": {
         "type": "string"
       },
-      "default": ["hull.io"]
+      "default": [
+        "hull.io"
+      ]
     },
     {
       "name": "synchronized_segments",
-      "title": "Restrict to users from these segments",
-      "description": "Data will be sent to Browser only for users belonging to those segments",
-      "type": "array",
-      "format": "segment",
-      "items": {
-        "type": "string"
-      },
-      "default": []
-    },
-    {
-      "name": "public_segments",
-      "title": "Segment names that can be forwarded to Browser",
+      "title": "Only users from these segments will be sent to the browser",
       "type": "array",
       "format": "segment",
       "items": {
@@ -53,19 +44,22 @@
     },
     {
       "name": "public_traits",
-      "title": "Traits that can be forwarded to Browser",
+      "title": "Traits that will be sent",
       "type": "array",
       "format": "trait",
       "items": {
         "type": "string"
       },
-      "default": ["domain", "email"]
+      "default": [
+        "domain",
+        "email"
+      ]
     },
     {
-      "name": "public_events",
-      "title": "Events that can be forwarded to Browser",
+      "name": "public_segments",
+      "title": "Segment names that will be sent",
       "type": "array",
-      "format": "event",
+      "format": "segment",
       "items": {
         "type": "string"
       },
@@ -74,6 +68,11 @@
   ],
   "resources": [],
   "readme": "readme.md",
-  "subscriptions" : [ { "url" : "/notify" } ],
-  "ui": false
+  "admin": "/admin.html",
+  "ui": false,
+  "subscriptions": [
+    {
+      "url": "/smart-notifier"
+    }
+  ]
 }

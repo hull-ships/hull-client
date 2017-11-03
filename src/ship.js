@@ -3,8 +3,9 @@
 import { Promise } from "es6-promise";
 import find from "lodash/find";
 import isEmpty from "lodash/isEmpty";
+import get from "lodash/get";
 import io from "socket.io-client";
-import getLocalStorage from "./lib/localstorage";
+import { setLocalStorage, getLocalStorage, deleteLocalStorage } from "./lib/localstorage";
 import getQueryStringIds from "./lib/querystring";
 import getAnalyticsIds from "./lib/analytics";
 import getHullIds from "./lib/hull";
@@ -14,25 +15,30 @@ import userUpdate from "./lib/user-update";
 
 const onEmbed = (rootNode, deployment, hull) => {
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
-  let id;
+  let shipId;
+  let platformId;
   let endpoint;
   if (hull && deployment) {
-    const { ship /* , platform */ } = deployment;
-    // const { id: platformId } = platform;
-    id = ship.id;
-    endpoint = `${ship.source_url.replace(/\/$/, '')}`;
+    const { ship, platform } = deployment;
+    platformId = platform.id;
+    shipId = ship.id;
+    endpoint = `${ship.source_url.replace(/\/$/, "")}`;
   } else if (scriptTag) {
-    id = scriptTag.getAttribute("data-hull-id");
+    shipId = scriptTag.getAttribute("data-hull-id");
     endpoint = scriptTag.getAttribute("data-hull-endpoint");
   }
 
-  if (!id || !endpoint) {
+  console.log(shipId, platformId);
+
+  if (!shipId || !endpoint) {
+    debugger
     return console.log("Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?");
   }
 
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
 
-  const socket = io(`${endpoint}/${id}`);
+  const socket = io(`${endpoint}/${shipId}`);
+
   function setup() {
     const search = hull
       ? Promise.all([getHullIds()])
@@ -46,19 +52,26 @@ const onEmbed = (rootNode, deployment, hull) => {
     },
       err => console.log(err)
     )
-    .then((query = {}) => {
-      if (!query) return null;
-      console.log('user.fetch', { id, query })
-      socket.emit("user.fetch", { id, query });
+    .then((claims = {}) => {
+      if (!claims) return null;
+      console.log("user.fetch", { shipId, platformId, claims });
+      socket.emit("user.fetch", { shipId, claims });
       return true;
     },
       err => console.log(err)
     );
   }
 
+  getLocalStorage().then(response => userUpdate({ response }));
+
   setup();
-  socket.on("user.update", (response = {}) => userUpdate({ response }));
-  socket.on("room.joined", (res) => { console.log("Joined Room", res); });
+
+  socket.on("user.update", (response = {}) => {
+    const userId = get(response, "user.id");
+    if (userId) setLocalStorage(response);
+    userUpdate({ response });
+  });
+  socket.on("room.joined", (res) => { console.log("room.joined", res); });
   socket.on("room.error", (res) => { console.log("error", res); });
   socket.on("close", ({ message }) => { console.log(message); });
 };

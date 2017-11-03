@@ -8,7 +8,14 @@ import _ from "lodash";
  * @param  {Object} options.ship     Ship settings
  * @return {Object}                  The user payload, status code, and script to run client-side
  */
-export default function ({ user = {}, segments, events, account = {}, client, ship = {} }) {
+export default function userPayload({
+  user = {},
+  segments = [],
+  events,
+  account = {},
+  client,
+  ship = {}
+}) {
   const { private_settings = {}, settings = {} } = ship;
 
   const {
@@ -18,22 +25,14 @@ export default function ({ user = {}, segments, events, account = {}, client, sh
     synchronized_segments = []
   } = private_settings;
 
-  const segmentIds = _.map(user.segments || segments, "id");
+  const segmentIds = _.map(segments, "id");
 
   // No Segment: Everyone goes there
   if (synchronized_segments.length && !_.intersection(synchronized_segments, segmentIds).length) {
-    return {
-      message: "private",
-      user: {
-        id: user.id
-      },
-      segments: {}
-    };
+    return { message: "private", user: { id: user.id }, segments: {} };
   }
 
-  const u = client
-  .utils
-  .groupTraits(_.pick(_.omit(user, "segments"), public_traits));
+  const u = client.utils.groupTraits(_.pick(_.omit(user, "segments"), public_traits));
   return {
     message: "ok",
     script: settings.script,
@@ -41,6 +40,6 @@ export default function ({ user = {}, segments, events, account = {}, client, sh
     // workaround to use the traits that contain both account and user traits, and leave the account object separate
     account: _.pick({ account }, _.filter(public_traits, t => t.indexOf("account.") === 0)).account,
     events: _.map(_.filter(events, e => _.includes(public_events, e.event)), "event"),
-    segments: _.map(_.filter((user.segments || segments), s => _.includes(public_segments, s.id)), "name")
+    segments: _.map(_.filter(segments, s => _.includes(public_segments, s.id)), "name")
   };
 }
