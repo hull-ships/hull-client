@@ -3,7 +3,7 @@ import Redis from "redis";
 import express from "express";
 import { Cache } from "hull/lib/infra";
 import { smartNotifierHandler } from "hull/lib/utils";
-import { devMode, errorHandler } from "hull-connector";
+import { errorHandler } from "hull-connector";
 import SocketIO from "socket.io";
 import socketIOredis from "socket.io-redis";
 import socketFactory from "./lib/socket-factory";
@@ -24,7 +24,10 @@ export default function Server(options = {}) {
 
   const app = express();
 
-  if (options.devMode) devMode(app, options);
+  if (options.devMode) {
+    const { devMode } = require('hull-connector-dev');
+    devMode(app, options);
+  }
 
   // Setup Hull express connector;
   const connector = new Hull.Connector(options);

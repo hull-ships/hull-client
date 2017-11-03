@@ -3956,9 +3956,9 @@ hull-client@1.1.3:
     uuid "^3.0.1"
     winston "^2.2.0"
 
-hull-connector-dev@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.13.tgz#298a13daad1b4924e74ca4f4182582649754ad86"
+hull-connector-dev@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.16.tgz#651df86095ae66cf5572bf62ed38557fab4555d0"
   dependencies:
     babel-jest "^21.2.0"
     babel-polyfill "^6.26.0"
@@ -3992,45 +3992,9 @@ hull-connector-dev@^1.0.13:
     webpack-dev-middleware "^1.12.0"
     webpack-hot-middleware "^2.20.0"
 
-hull-connector-dev@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.15.tgz#a0bf37e1fa7b5164da82ac049a6bd886fdf6ae34"
-  dependencies:
-    babel-jest "^21.2.0"
-    babel-polyfill "^6.26.0"
-    babel-watch "^2.0.7"
-    boxen "^1.2.2"
-    chai "^4.1.2"
-    chalk "^2.3.0"
-    eslint "^4.9.0"
-    eslint-config-airbnb "^16.1.0"
-    eslint-config-prettier "^2.6.0"
-    eslint-plugin-flowtype "^2.39.1"
-    eslint-plugin-flowtype-errors "^3.3.4"
-    eslint-plugin-import "^2.8.0"
-    eslint-plugin-jest "^21.2.0"
-    eslint-plugin-jsx-a11y "^6.0.2"
-    eslint-plugin-prettier "^2.3.1"
-    eslint-plugin-react "^7.4.0"
-    exit-hook "^1.1.1"
-    flow-bin "^0.57.3"
-    lint-staged "^4.3.0"
-    ngrok "^2.2.23"
-    npm-check "^5.4.5"
-    prettier "^1.7.4"
-    progress-bar-webpack-plugin "^1.10.0"
-    react-dev-utils "^4.1.0"
-    react-hot-loader "^3.1.1"
-    reactotron "^0.9.0"
-    reactotron-react-js "^1.12.2"
-    reactotron-redux "^1.12.2"
-    rimraf "^2.6.2"
-    webpack-dev-middleware "^1.12.0"
-    webpack-hot-middleware "^2.20.0"
-
-hull-connector@^1.0.15:
-  version "1.0.15"
-  resolved "https://registry.yarnpkg.com/hull-connector/-/hull-connector-1.0.15.tgz#05562d56e67e129bbeb24f864368282a36eac122"
+hull-connector@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/hull-connector/-/hull-connector-1.0.16.tgz#399457723044be10bb3622f286c0d8c4fb71b3f1"
   dependencies:
     autoprefixer "^7.1.6"
     babel-cli "^6.26.0"
@@ -4056,7 +4020,6 @@ hull-connector@^1.0.15:
     exit-hook "^1.1.1"
     glob "^7.1.2"
     happypack "^4.0.0"
-    hull-connector-dev "^1.0.13"
     lint-staged "^4.3.0"
     lodash "^4.17.4"
     node-sass "^4.5.3"
@@ -4068,9 +4031,9 @@ hull-connector@^1.0.15:
     webpack "^3.8.1"
     webpack-alternate-require-loader "^0.0.3"
 
-hull@^0.13.3:
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/hull/-/hull-0.13.3.tgz#cc8a00bb504251a8142e4cbe9eb80e04dd4d0464"
+hull@^0.13.4:
+  version "0.13.4"
+  resolved "https://registry.yarnpkg.com/hull/-/hull-0.13.4.tgz#4e90a77a67a39a7b43eff27402dfaeece5047069"
   dependencies:
     JSONStream "^1.1.2"
     aws-sdk "^2.81.0"
