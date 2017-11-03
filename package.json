@@ -42,7 +42,7 @@
     "test:modules": "builder run test:modules",
     "test:specs": "builder run test:specs",
     "test:units": "builder run test:units",
-    "start": "NODE_ENV=production node -r newrelic ./lib",
+    "start": "NODE_ENV=production node -r newrelic lib",
     "dev": "builder run dev",
     "test": "builder run npm:test"
   },
