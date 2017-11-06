@@ -51,7 +51,6 @@ export default function Store(redis) {
       }
 
       lru(id);
-      console.log("Updating Ship Settings", { ship: { id, private_settings, settings }, config });
       return set(id, { ship: { id, private_settings, settings }, config });
     }
     return Promise.reject(new Error("No context object"));

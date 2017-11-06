@@ -6,7 +6,6 @@ export default function shipUpdateFactory({ store, onConnection, io }) {
     try {
       await store.setup(ctx, io);
       if (store.pool(ship)) return true;
-      console.log("Setting up connection for ship", ship);
       const setupOnConnection = io.of(ship).on("connection", onConnection);
       return Promise.resolve(store.pool(ship, setupOnConnection));
     } catch (err) {
