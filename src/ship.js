@@ -35,7 +35,7 @@ const onEmbed = (rootNode, deployment, hull) => {
 
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
 
-  const socket = io(`${endpoint}/${shipId}`);
+  const socket = io(`${endpoint}/${shipId}`, { transports: ['websocket'] });
 
   function setup() {
     const search = hull

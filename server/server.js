@@ -43,7 +43,10 @@ export default function Server(options = {}) {
 
   const redis = Redis.createClient(redisUri);
   const store = Store(redis);
-  const io = SocketIO(connector.startApp(app)).adapter(socketIOredis(redisUri));
+  const io = SocketIO(connector.startApp(app), {
+    pingInterval: 15000,
+    pingTimeout: 30000
+  }).adapter(socketIOredis(redisUri));
   const sendPayload = sendPayloadFactory({ io });
   const onConnection = socketFactory({ Hull, store, sendPayload });
 
