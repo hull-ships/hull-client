@@ -2385,7 +2385,7 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
-debug@*, debug@^3.0.1:
+debug@*, debug@^3.0.1, debug@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
@@ -2612,6 +2612,10 @@ dot-prop@^4.1.0:
   resolved "https://registry.yarnpkg.com/dot-prop/-/dot-prop-4.2.0.tgz#1f19e0c2e1aa0e32797c49799f2837ac6af69c57"
   dependencies:
     is-obj "^1.0.0"
+
+dotenv@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
 
 double-ended-queue@^2.1.0-0:
   version "2.1.0-0"
@@ -3956,9 +3960,9 @@ hull-client@1.1.3:
     uuid "^3.0.1"
     winston "^2.2.0"
 
-hull-connector-dev@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.17.tgz#f5711b06bfa88fd8a4c97a9eaddfb00eb3161fb1"
+hull-connector-dev@^1.0.22:
+  version "1.0.22"
+  resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.22.tgz#673718ebf4f518f03a0019734e214c5bb79bb40c"
   dependencies:
     babel-jest "^21.2.0"
     babel-polyfill "^6.26.0"
@@ -3966,6 +3970,7 @@ hull-connector-dev@^1.0.17:
     boxen "^1.2.2"
     chai "^4.1.2"
     chalk "^2.3.0"
+    dotenv "^4.0.0"
     eslint "^4.9.0"
     eslint-config-airbnb "^16.1.0"
     eslint-config-prettier "^2.6.0"
@@ -3992,9 +3997,9 @@ hull-connector-dev@^1.0.17:
     webpack-dev-middleware "^1.12.0"
     webpack-hot-middleware "^2.20.0"
 
-hull-connector@^1.0.17:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/hull-connector/-/hull-connector-1.0.17.tgz#3a84286adaa9e7294ae3a8f9eeb7f376ca0ee9bf"
+hull-connector@^1.0.22:
+  version "1.0.22"
+  resolved "https://registry.yarnpkg.com/hull-connector/-/hull-connector-1.0.22.tgz#f7de0aa0c78d3893cad41bf9ec17dc9d6390c58a"
   dependencies:
     autoprefixer "^7.1.6"
     babel-cli "^6.26.0"
@@ -4017,6 +4022,7 @@ hull-connector@^1.0.17:
     builder-support "^0.5.0"
     chalk "^2.3.0"
     css-loader "^0.28.7"
+    dotenv "^4.0.0"
     exit-hook "^1.1.1"
     glob "^7.1.2"
     happypack "^4.0.0"

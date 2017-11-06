@@ -11,9 +11,11 @@ const USER_NOT_FOUND = {
 
 const getIdentifier = (q = {}) => (q.id || q.external_id || q.email || q.anonymous_id);
 const loggerFactory = (socket, Hull) => (action = "incoming.user.fetch.error", message = "closing connection", client = Hull) => {
-  socket.emit("close", { message });
-  socket.disconnect(true);
   client.logger.error(action, { message });
+  socket.emit("close", { message });
+  setTimeout(() => {
+    socket.disconnect(true);
+  }, 200)
 };
 const isWhitelisted = (domains, hostname) => _.includes(_.map(domains, d => URI(`https://${d.replace(/http(s)?:\/\//, "")}`).hostname()), hostname);
 
@@ -49,8 +51,13 @@ export default function socketFactory({ Hull, store, sendPayload }) {
         const client = new Hull({ ...config, id: shipId });
         const userClient = client.asUser(claims, { scopes: ["admin"] });
 
-        const platformData = await client.get(platformId);
-        console.log(platformData);
+        // if (platformId) {
+        //   const platform = await lru(shipId).getOrSet(platformId, () => client.get(platformId), 60000);
+        //   const { domains, id } = platform;
+        //   console.log("///////////////////////////////");
+        //   console.log(id, platform, domains, config)
+        //   console.log("///////////////////////////////");
+        // }
 
         if (!whitelisted_domains.length) {
           return logClose("incoming.connection.error", "No whitelisted domains", userClient);

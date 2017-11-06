@@ -5,6 +5,7 @@ import find from "lodash/find";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import io from "socket.io-client";
+import debugFactory from "debug";
 import { setLocalStorage, getLocalStorageId, getLocalStorage, deleteLocalStorage } from "./lib/localstorage";
 import getQueryStringIds from "./lib/querystring";
 import getAnalyticsIds from "./lib/analytics";
@@ -12,8 +13,8 @@ import getHullIds from "./lib/hull";
 import getIntercomIds from "./lib/intercom";
 import userUpdate from "./lib/user-update";
 
-
 const onEmbed = (rootNode, deployment, hull) => {
+  const debug = debugFactory('hullbrowser');
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
   let shipId;
   let platformId;
@@ -28,13 +29,12 @@ const onEmbed = (rootNode, deployment, hull) => {
     endpoint = scriptTag.getAttribute("data-hull-endpoint");
   }
 
-
   if (!shipId || !endpoint) {
     return console.log("Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?");
   }
 
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
-
+  debug("Creating socket on", `${endpoint}/${shipId}`);
   const socket = io(`${endpoint}/${shipId}`, { transports: ['websocket'] });
 
   function setup() {
@@ -48,30 +48,30 @@ const onEmbed = (rootNode, deployment, hull) => {
       setTimeout(setup, 500);
       return null;
     },
-      err => console.log(err)
+      err => debug(err)
     )
     .then((claims = {}) => {
       if (!claims) return null;
-      console.log("user.fetch", { shipId, platformId, claims });
-      socket.emit("user.fetch", { shipId, claims });
+      debug("Establishing connection with settings", { shipId, platformId, claims });
+      socket.emit("user.fetch", { shipId, platformId, claims });
       return true;
     },
-      err => console.log(err)
+      err => debug(err)
     );
   }
 
-  getLocalStorage().then(response => userUpdate({ response }));
+  getLocalStorage().then(response => userUpdate({ debug, response }));
 
   setup();
 
   socket.on("user.update", (response = {}) => {
     const userId = get(response, "user.id");
     if (userId) setLocalStorage(response);
-    userUpdate({ response });
+    userUpdate({ debug, response });
   });
-  socket.on("room.joined", (res) => { console.log("room.joined", res); });
-  socket.on("room.error", (res) => { console.log("error", res); });
-  socket.on("close", ({ message }) => { console.log(message); });
+  socket.on("room.joined", (res) => { debug("room.joined", res); });
+  socket.on("room.error", (res) => { debug("error", res); });
+  socket.on("close", ({ message }) => { debug("close", message); });
 };
 
 if (window.Hull && window.Hull.onEmbed) {
