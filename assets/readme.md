@@ -43,7 +43,7 @@ When installed from `Hull.js`, the connector fetches the user ID from Hull.
 
 When installed as a code snippet, the connector will look for identifiers, in the following order:
 
-- A variable called `hull_id` in Local Storage
+- A variable called `hull_browser`, with JSON-serialized `{ id }` field in Local Storage
 - `ajs_email`, `ajs_uid`, `ajs_aid` fields in the Querystring (Segments's Querystring API)
 - Intercom's `visitor ID`
 - Hull's `anonymousId`, `externalId`, `hullId`, `email`
