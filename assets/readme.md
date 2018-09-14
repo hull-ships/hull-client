@@ -67,7 +67,7 @@ hullBrowser.on("user.update",  function({
     events,
     changes
   }){
-
+    console.log("Your Code here", user)
   })
 );
 ```
