@@ -10,6 +10,14 @@
     "outgoing",
     "oneColumn"
   ],
+  "tabs": [
+    {
+      "title": "Installation",
+      "url": "/admin.html",
+      "size": "small",
+      "editable": false
+    }
+  ],
   "settings": [
     {
       "name": "script",
@@ -68,7 +76,6 @@
   ],
   "resources": [],
   "readme": "readme.md",
-  "admin": "/admin.html",
   "ui": false,
   "subscriptions": [
     {
