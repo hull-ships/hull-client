@@ -1,10 +1,11 @@
 /* global window */
+
 import get from "lodash/get";
 
-export default function ({ debug, response }) {
+export default function({ debug, response, changes }) {
   if (get(response, "user.id")) {
     const { user = {}, events = [], account = {}, segments, script } = response;
     debug('hull user update', response);
-    eval(`!(function(user, segments, account, events){ ${script} })(${JSON.stringify(user)}, ${JSON.stringify(segments)}, ${JSON.stringify(account)}, ${JSON.stringify(events)})`);
+    eval(`!(function(user, segments, account, events, changes){ ${script} })(${JSON.stringify(user)}, ${JSON.stringify(segments)}, ${JSON.stringify(account)}, ${JSON.stringify(events)}, ${JSON.stringify(changes)})`);
   }
 }

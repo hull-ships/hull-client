@@ -12,6 +12,7 @@ import getAnalyticsIds from "./lib/analytics";
 import getHullIds from "./lib/hull";
 import getIntercomIds from "./lib/intercom";
 import userUpdate from "./lib/user-update";
+import diff from "./lib/diff";
 
 const onEmbed = (rootNode, deployment, hull) => {
   const debug = debugFactory('hullbrowser');
@@ -66,8 +67,10 @@ const onEmbed = (rootNode, deployment, hull) => {
 
   socket.on("user.update", (response = {}) => {
     const userId = get(response, "user.id");
+    const previous = getLocalStorage() || {};
+    const changes = diff(response, previous);
     if (userId) setLocalStorage(response);
-    userUpdate({ debug, response });
+    userUpdate({ debug, response, changes });
   });
   socket.on("room.joined", (res) => { debug("room.joined", res); });
   socket.on("room.error", (res) => { debug("error", res); });
