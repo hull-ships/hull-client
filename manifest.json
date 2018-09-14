@@ -72,6 +72,16 @@
         "type": "string"
       },
       "default": []
+    },
+    {
+      "name": "public_account_segments",
+      "title": "Account Segment names that will be sent",
+      "type": "array",
+      "format": "account_segment",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     }
   ],
   "resources": [],

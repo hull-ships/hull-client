@@ -18,8 +18,8 @@ The Script will have access to an object `user` and an object `segments` with th
     ...whitelisted properties
   }
   const segments = [];
-  
-  console.log(user, segments);
+
+  console.log(user, segments, account, account_segments, events, changes);
 ```
 
 
@@ -36,6 +36,65 @@ segments.map(function(segment){
 })
 ```
 
+# Listening to events
+
+Alternatively, you can subscribe to an event emitter that will emit a new event everytime we receive updated data from the server.
+
+If you have the Hull library present in the page, the syntax is the following:
+
+```js
+Hull.on("user.update", function({
+    user,
+    segments,
+    account,
+    account_segments,
+    events,
+    changes
+  }){
+
+  })
+);
+```
+
+if you don't have the Hull library in the page, you can access the Event emitter like so:
+
+```js
+hullBrowser.on("user.update",  function({
+    user,
+    segments,
+    account,
+    account_segments,
+    events,
+    changes
+  }){
+
+  })
+);
+```
+
+We use https://github.com/EventEmitter2/EventEmitter2 so you can read it's documentation to view the full set of possibilities
+
+# Running code on data changed:
+
+The `changes` object will return the values that changed between the previous update and the current one.
+Since Hull works somewhat like an Event Loop, the first payload you will receive might not have all the enrichments from other connectors. Subsequent payloads could contain more data. The Changes object will tell you what changed.
+
+The `changes` object has the following format:
+
+```js
+var changes = {
+  user: {
+    foo: [previous_value, new_value]
+  },
+  account: {
+    bar: [previous_value, new_value]
+  }
+}
+```
+
+# Running code only on page load:
+
+On a new page load, the `changes` object will be `undefined`. You can rely on it's value to trigger events only on page load.
 
 # Identity Resolution
 

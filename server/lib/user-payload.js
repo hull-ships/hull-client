@@ -22,6 +22,7 @@ export default function userPayload({
     public_traits = [],
     public_events = [],
     public_segments = [],
+    public_account_segments = [],
     synchronized_segments = []
   } = private_settings;
 
@@ -40,6 +41,7 @@ export default function userPayload({
     // workaround to use the traits that contain both account and user traits, and leave the account object separate
     account: _.pick({ account }, _.filter(public_traits, t => t.indexOf("account.") === 0)).account,
     events: _.map(_.filter(events, e => _.includes(public_events, e.event)), "event"),
-    segments: _.map(_.filter(segments, s => _.includes(public_segments, s.id)), "name")
+    segments: _.map(_.filter(segments, s => _.includes(public_segments, s.id)), "name"),
+    account_segments: _.map(_.filter(segments, s => _.includes(public_account_segments, s.id)), "name")
   };
 }

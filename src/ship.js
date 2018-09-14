@@ -13,9 +13,10 @@ import getHullIds from "./lib/hull";
 import getIntercomIds from "./lib/intercom";
 import userUpdate from "./lib/user-update";
 import diff from "./lib/diff";
+import { EventEmitter2 as EventEmitter } from "eventemitter2";
 
 const onEmbed = (rootNode, deployment, hull) => {
-  const debug = debugFactory('hullbrowser');
+  const debug = debugFactory('hull-browser');
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
   let shipId;
   let platformId;
@@ -37,6 +38,12 @@ const onEmbed = (rootNode, deployment, hull) => {
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
   debug("Creating socket on", `${endpoint}/${shipId}`);
   const socket = io(`${endpoint}/${shipId}`, { transports: ['websocket'] });
+  const emitter = window.Hull && window.Hull.emit ? window.Hull : new EventEmitter({
+    wildcard: true,
+    verboseMemoryLeak: true
+  });
+
+  if (!window.Hull) window.hullBrowser = emitter;
 
   function setup() {
     const search = hull
@@ -61,16 +68,20 @@ const onEmbed = (rootNode, deployment, hull) => {
     );
   }
 
-  getLocalStorage().then(response => userUpdate({ debug, response }));
+  // Emit a first event on boot.
+  getLocalStorage().then(response => userUpdate({ emitter, debug, response, boot: true }));
 
   setup();
 
-  socket.on("user.update", (response = {}) => {
+  socket.on("user.update", async (response = {}) => {
     const userId = get(response, "user.id");
-    const previous = getLocalStorage() || {};
+    const previous = await getLocalStorage() || {};
     const changes = diff(response, previous);
-    if (userId) setLocalStorage(response);
-    userUpdate({ debug, response, changes });
+    if (!_.isEmpty(changes)) {
+      debug("user.update CHANGE", changes);
+      if (userId) setLocalStorage(response);
+      userUpdate({ emitter, debug, response, changes });
+    }
   });
   socket.on("room.joined", (res) => { debug("room.joined", res); });
   socket.on("room.error", (res) => { debug("error", res); });

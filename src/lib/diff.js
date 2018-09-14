@@ -1,4 +1,4 @@
-import transform from "lodash/isEqual";
+import transform from "lodash/transform";
 import isEqual from "lodash/isEqual";
 import isObject from "lodash/isObject";
 
@@ -11,7 +11,7 @@ import isObject from "lodash/isObject";
 export default function difference(object, base) {
 	return transform(object, (result, value, key) => {
 		if (!isEqual(value, base[key])) {
-			result[key] = isObject(value) && isObject(base[key]) ? difference(value, base[key]) : value;
+			result[key] = isObject(value) && isObject(base[key]) ? difference(value, base[key]) : [base[key], value];
 		}
 	});
 }

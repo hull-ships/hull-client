@@ -26,6 +26,7 @@
     ]
   },
   "scripts": {
+    "ngrok": "ngrok http 8082 --region eu --subdomain hull-browser",
     "build": "builder run build",
     "build:client": "builder run build:client",
     "build:server": "builder run build:server",
@@ -54,10 +55,11 @@
     "css": "^2.2.1",
     "debug": "^3.1.0",
     "es6-promise": "^4.1.1",
+    "eventemitter2": "^5.0.1",
     "express": "^4.16.2",
     "hull": "^0.13.4",
-    "hull-connector": "^1.0.41",
-    "hull-connector-dev": "^1.0.41",
+    "hull-connector": "^1.0.44",
+    "hull-connector-dev": "^1.0.44",
     "jwt-simple": "^0.5.1",
     "lodash": "^4.17.4",
     "query-string": "^5.0.1",

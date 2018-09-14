@@ -3644,6 +3644,10 @@ event-emitter@~0.3.5:
     d "1"
     es5-ext "~0.10.14"
 
+eventemitter2@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-5.0.1.tgz#6197a095d5fb6b57e8942f6fd7eaad63a09c9452"
+
 events@^1.0.0, events@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
@@ -4818,7 +4822,7 @@ hull-client@^1.2.2:
     uuid "^3.0.1"
     winston "^2.2.0"
 
-hull-connector-dev@^1.0.41:
+hull-connector-dev@^1.0.44:
   version "1.0.44"
   resolved "https://registry.yarnpkg.com/hull-connector-dev/-/hull-connector-dev-1.0.44.tgz#7cd3047a6481810c563ea44d71e972ce4f5e3126"
   dependencies:
@@ -4878,7 +4882,7 @@ hull-connector-dev@^1.0.41:
     webpack-dev-middleware "^2.0.2"
     webpack-hot-middleware "^2.21.0"
 
-hull-connector@^1.0.41:
+hull-connector@^1.0.44:
   version "1.0.44"
   resolved "https://registry.yarnpkg.com/hull-connector/-/hull-connector-1.0.44.tgz#34e51e36351817979c5584c7566367e8cef74b21"
   dependencies:
