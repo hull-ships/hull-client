@@ -77,7 +77,7 @@ const onEmbed = (rootNode, deployment, hull) => {
     const userId = get(response, "user.id");
     const previous = await getLocalStorage() || {};
     const changes = diff(response, previous);
-    if (!_.isEmpty(changes)) {
+    if (!isEmpty(changes)) {
       debug("user.update CHANGE", changes);
       if (userId) setLocalStorage(response);
       userUpdate({ emitter, debug, response, changes });
