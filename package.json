@@ -1,6 +1,6 @@
 {
   "name": "hull-browser",
-  "version": "1.0.0",
+  "version": "0.0.4",
   "description": "Synchronize Data with Browser",
   "main": "index.js",
   "license": "MIT",
