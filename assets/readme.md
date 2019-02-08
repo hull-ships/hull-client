@@ -107,3 +107,14 @@ When installed as a code snippet, the connector will look for identifiers, in th
 - Intercom's `visitor ID`
 - Hull's `anonymousId`, `externalId`, `hullId`, `email`
 - Segment's `userId`, `anonymousId`, `email`
+
+# Debugging
+
+You think there is an issue with the connector ?
+You can enable debugging messages by typing the following command in your chrome console in the page where the connector is installed:
+
+```js
+localStorage.debug = 'hull-browser*'
+```
+
+The connector will start logging more low-level messages to inform you of it's status

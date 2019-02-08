@@ -6,7 +6,12 @@ import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import io from "socket.io-client";
 import debugFactory from "debug";
-import { setLocalStorage, getLocalStorageId, getLocalStorage, deleteLocalStorage } from "./lib/localstorage";
+import {
+  setLocalStorage,
+  getLocalStorageId,
+  getLocalStorage,
+  deleteLocalStorage
+} from "./lib/localstorage";
 import getQueryStringIds from "./lib/querystring";
 import getAnalyticsIds from "./lib/analytics";
 import getHullIds from "./lib/hull";
@@ -16,7 +21,7 @@ import diff from "./lib/diff";
 import { EventEmitter2 as EventEmitter } from "eventemitter2";
 
 const onEmbed = (rootNode, deployment, hull) => {
-  const debug = debugFactory('hull-browser');
+  const debug = debugFactory("hull-browser");
   const scriptTag = document.querySelector("script[data-hull-endpoint]");
   let shipId;
   let platformId;
@@ -32,60 +37,86 @@ const onEmbed = (rootNode, deployment, hull) => {
   }
 
   if (!shipId || !endpoint) {
-    return console.log("Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?");
+    return console.log(
+      "Could not find ID or Endpoint on the Script tag. Did you copy/paste it correctly?"
+    );
   }
 
   const findId = (ids = []) => find(ids, idGroup => !isEmpty(idGroup));
   debug("Creating socket on", `${endpoint}/${shipId}`);
-  const socket = io(`${endpoint}/${shipId}`, { transports: ['websocket'] });
-  const emitter = window.Hull && window.Hull.emit ? window.Hull : new EventEmitter({
-    wildcard: true,
-    verboseMemoryLeak: true
-  });
+  const socket = io(`${endpoint}/${shipId}`, { transports: ["websocket"] });
+  const emitter =
+    window.Hull && window.Hull.emit
+      ? window.Hull
+      : new EventEmitter({
+          wildcard: true,
+          verboseMemoryLeak: true
+        });
 
   if (!window.Hull) window.hullBrowser = emitter;
 
   function setup() {
     const search = hull
       ? Promise.all([getHullIds()])
-      : Promise.all([getLocalStorageId(), getQueryStringIds(), getIntercomIds(), getHullIds(), getAnalyticsIds()]);
+      : Promise.all([
+          getLocalStorageId(),
+          getQueryStringIds(),
+          getIntercomIds(),
+          getHullIds(),
+          getAnalyticsIds()
+        ]);
 
-    search.then((ids) => {
-      const found = findId(ids);
-      if (!isEmpty(found)) return found;
-      setTimeout(setup, 500);
-      return null;
-    },
-      err => debug(err)
-    )
-    .then((claims = {}) => {
-      if (!claims) return null;
-      debug("Establishing connection with settings", { shipId, platformId, claims });
-      socket.emit("user.fetch", { shipId, platformId, claims });
-      return true;
-    },
-      err => debug(err)
-    );
+    search
+      .then(
+        ids => {
+          const found = findId(ids);
+          if (!isEmpty(found)) return found;
+          setTimeout(setup, 500);
+          return null;
+        },
+        err => debug(err)
+      )
+      .then(
+        (claims = {}) => {
+          if (!claims) return null;
+          debug("Establishing connection with settings", {
+            shipId,
+            platformId,
+            claims
+          });
+          socket.emit("user.fetch", { shipId, platformId, claims });
+          return true;
+        },
+        err => debug(err)
+      );
   }
 
   // Emit a first event on boot.
-  getLocalStorage().then(response => userUpdate({ emitter, debug, response, boot: true }));
+  getLocalStorage().then(response =>
+    userUpdate({ emitter, debug, response, boot: true })
+  );
 
   setup();
 
   socket.on("user.update", async (response = {}) => {
     const userId = get(response, "user.id");
-    const previous = await getLocalStorage() || {};
+    const previous = (await getLocalStorage()) || {};
     const changes = diff(response, previous);
-    if (!_.isEmpty(changes)) {
+    if (!isEmpty(changes)) {
       debug("user.update CHANGE", changes);
       if (userId) setLocalStorage(response);
       userUpdate({ emitter, debug, response, changes });
     }
   });
-  socket.on("room.joined", (res) => { debug("room.joined", res); });
-  socket.on("room.error", (res) => { debug("error", res); });
-  socket.on("close", ({ message }) => { debug("close", message); });
+  socket.on("room.joined", res => {
+    debug("room.joined", res);
+  });
+  socket.on("room.error", res => {
+    debug("error", res);
+  });
+  socket.on("close", ({ message }) => {
+    debug("close", message);
+  });
 };
 
 if (window.Hull && window.Hull.onEmbed) {
