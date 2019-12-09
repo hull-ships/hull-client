@@ -28,9 +28,19 @@ const onEmbed = (rootNode, deployment, hull) => {
   let endpoint;
   if (hull && deployment) {
     const { ship, platform } = deployment;
-    platformId = platform.id;
-    shipId = ship.id;
-    endpoint = `${ship.source_url.replace(/\/$/, "")}`;
+    if (platform) {
+      platformId = platform.id;
+      shipId = ship.id;
+      endpoint = `${ship.source_url.replace(/\/$/, "")}`;
+    } else if (ship && ship.index) {
+      platformId = 'website';
+      const shipSource = document.createElement('a')
+      shipSource.href = deployment.ship.index;
+      if (shipSource.hash.match(/^\#[a-z0-9]{24}$/)) {
+        shipId = shipSource.hash.substr(1);
+        endpoint = shipSource.origin;
+      }
+    }
   } else if (scriptTag) {
     shipId = scriptTag.getAttribute("data-hull-id");
     endpoint = scriptTag.getAttribute("data-hull-endpoint");
