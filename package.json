@@ -61,7 +61,7 @@
     "hull-connector": "^1.0.44",
     "hull-connector-dev": "^1.0.44",
     "jwt-simple": "^0.5.1",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.19",
     "query-string": "^5.0.1",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
