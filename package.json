@@ -76,7 +76,7 @@
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
     "socket.io-redis": "^5.2.0",
-    "urijs": "^1.19.0"
+    "urijs": "^1.19.4"
   },
   "devDependencies": {
     "prettier": "^1.14.2",
