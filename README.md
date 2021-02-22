@@ -4,6 +4,7 @@
 Sends Hull customer data back in the page, so you can use it for personalization, segmentation and ad targeting.
 
 If you want your own instance: [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/hull-ships/hull-browser)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhull-ships%2Fhull-browser.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhull-ships%2Fhull-browser?ref=badge_shield)
 
 ---
 
@@ -65,3 +66,7 @@ It's not mandatory since we use Redis behind the scenes for a LRU and a Config c
 
 https://devcenter.heroku.com/articles/session-affinity
 https://socket.io/docs/using-multiple-nodes/
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhull-ships%2Fhull-browser.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhull-ships%2Fhull-browser?ref=badge_large)
